@@ -191,9 +191,8 @@
     <script>
         const qaDisplay = document.getElementById('qa-display'); const suggestionGrid = document.getElementById('suggestion-grid'); const qaForm = document.getElementById('qa-form'); const questionInput = document.getElementById('question-input'); const askBtn = document.getElementById('ask-btn'); const dashboardGrid = document.querySelector('.dashboard-grid'); const dashboardPlaceholder = document.getElementById('dashboard-placeholder');
         
-        // **[UPDATED & CORRECTED]** Q&A responses object. The first three questions are removed from the list of suggestions.
         const responses = {
-            // The following three entries are kept for keyword matching if the user types a similar question, but they won't be displayed as buttons.
+            // These are the questions that WILL be displayed as suggestion buttons.
             "I would like to briefly understand the development trend of the green finance market in Malaysia.": `This chart clearly presents two core indicators of Malaysia's green finance market:
 - The blue bar chart represents the amount of new green financing each year, reflecting the annual growth momentum of the market.
 - The red line chart represents the cumulative amount of green financing, indicating the continuous expansion of the total market size.
@@ -234,7 +233,7 @@ This doughnut chart illustrates Malaysia's planned energy capacity mix by 2050 u
 
 ![Malaysia's Planned Energy Capacity Mix by 2050](Q3.jpeg)`,
 
-            // These are the questions that WILL be displayed as suggestion buttons.
+            // The following three entries are kept for keyword matching if the user types a similar question, but they won't be displayed as buttons.
             "How does SmartGuard support government policies like MyDigital and NETR?": `SmartGuard directly supports national strategies in two key ways:
 
 1.  **Data-Driven Policy Insights:** Our AI engine processes real-time data on green energy projects, comparing them against NETR goals. This generates clear, visual reports to help your ministry identify high-potential projects, ensuring subsidies are allocated effectively.
@@ -253,11 +252,11 @@ This doughnut chart illustrates Malaysia's planned energy capacity mix by 2050 u
             "default": `I can answer questions about the SmartGuard platform and the Malaysian green finance market. Please try one of the suggestions, or ask your own question.`
         };
         
-        // This list defines which questions will appear as suggestion buttons.
+        // [MODIFIED] This list now defines the new set of questions that will appear as suggestion buttons.
         const suggestionQuestions = [
-            "How does SmartGuard support government policies like MyDigital and NETR?",
-            "As a small investor, how can your platform help me?",
-            "Explain your ESG scoring system for financial institutions."
+            "I would like to briefly understand the development trend of the green finance market in Malaysia.",
+            "I would like to briefly understand the trends of the main green investment indicators in Malaysia?",
+            "I would like to ask about the investment prospects of the wind power generation industry in Malaysia?"
         ];
 
         suggestionQuestions.forEach(question => {
