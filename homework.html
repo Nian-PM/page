@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGuard | AI-Powered Insights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* [REFINED] Modern Dark Business Palette */
+        :root {
+            --bg-color: #0a0a0a; /* Deeper black */
+            --primary-card-bg: #111111;
+            --secondary-card-bg: #1e1e1e;
+            --border-color: #2a2a2a;
+            --text-primary: #f5f5f5; /* Slightly softer white */
+            --text-secondary: #a3a3a3;
+            /* Sophisticated Accent Colors */
+            --accent-green: #22c55e;
+            --accent-green-dark: #16a34a;
+            --accent-blue: #3b82f6;
+            --accent-blue-dark: #2563eb; /* More corporate blue for user messages */
+            --accent-purple: #8b5cf6;
+            --accent-purple-dark: #7c3aed;
+            --font-family: 'Inter', sans-serif;
+            /* Gradients for Charts & Highlights */
+            --gradient-green: linear-gradient(180deg, var(--accent-green), var(--accent-green-dark));
+            --gradient-purple: linear-gradient(180deg, var(--accent-purple), var(--accent-purple-dark));
+            --gradient-blue: linear-gradient(180deg, var(--accent-blue), #1d4ed8);
+        }
+        html { box-sizing: border-box; scroll-behavior: smooth; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.7; /* Increased for readability */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .logo {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            background: var(--primary-card-bg);
+            padding: 8px;
+        }
+        /* [REFINED] Gradient Title for emphasis */
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #ffffff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 550px;
+        }
+        main {
+            padding: 40px 0;
+        }
+        /* [REFINED] Section Title with gradient bar */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            padding-left: 18px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid;
+            border-image: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple)) 1;
+        }
+        .section-title::before { content: none; } /* Replaced with border-image */
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-bottom: 80px; }
+        
+        /* [REFINED] Card with glow hover effect */
+        .chart-card {
+            background: var(--primary-card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-card:hover {
+            transform: translateY(-8px);
+            border-color: #4b4b4b;
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.1), 0 0 40px rgba(59, 130, 246, 0.1);
+        }
+        .chart-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .chart-card-header .icon { width: 24px; height: 24px; color: var(--text-secondary); }
+        .chart-card h3 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+        .chart-container {
+            width: 100%;
+            height: 240px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chart-overlay-text {
+            position: absolute;
+            font-size: 3.5rem;
+            font-weight: 700;
+        }
+
+        /* [REFINED] Q&A Section with better styling */
+        #interactive-qa { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0); background-size: 20px 20px; background-position: center; border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; }
+        .suggestion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .suggestion-btn { background-color: var(--secondary-card-bg); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 12px 16px; border-radius: 10px; cursor: pointer; text-align: left; font-family: var(--font-family); font-size: 0.9rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;}
+        .suggestion-btn::before { content: '›'; font-weight: bold; }
+        .suggestion-btn:hover { background-color: #3f3f46; color: var(--text-primary); border-color: #52525b; transform: translateX(4px); }
+        .qa-display { height: 350px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background-color: var(--bg-color); border-radius: 12px; }
+        .qa-message { max-width: 85%; margin-bottom: 15px; padding: 12px 18px; border-radius: 18px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+        .user-question { background-color: var(--accent-blue-dark); color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+        .ai-answer { background-color: var(--secondary-card-bg); color: var(--text-primary); margin-right: auto; border-bottom-left-radius: 4px; }
+        .ai-answer img { max-width: 100%; border-radius: 8px; margin-top: 12px; }
+        .thinking-indicator { display: flex; align-items: center; padding: 12px 18px; }
+        .thinking-indicator span { height: 8px; width: 8px; margin: 0 2px; background-color: var(--text-secondary); border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+        .thinking-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .qa-form { display: flex; gap: 10px; margin-top: 20px; }
+        #question-input { flex-grow: 1; background-color: var(--secondary-card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: var(--font-family); color: var(--text-primary); transition: all 0.2s ease; }
+        #question-input:focus { outline: none; border-color: var(--accent-blue); background-color: #2a2a2a; }
+        #ask-btn { background: var(--accent-blue); color: #fff; border: none; border-radius: 10px; padding: 0 24px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s ease; }
+        #ask-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #ask-btn:hover:enabled { background: var(--accent-blue-dark); }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        footer { text-align: center; padding: 40px; margin-top: 60px; color: var(--text-secondary); font-size: 0.9em; border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="logo.png" alt="SmartGuard logo, stylized shield" class="logo" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyYzU1ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAyMWM0LjQxOCAwIDgtMy41ODIgOC04VjVhMiAyIDAgMCAwLTItMkg2YTIgMiAwIDAgMC0yIDJ2OGMwIDQuNDE4IDMuNTgyIDggOCA4eiIvPjxwb3N0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzIyYzU1ZSIvPjxwb3N0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTZhM2RhIi8+PC9zdmc+';">
+            <h1>SmartGuard</h1>
+            <p>AI-Powered Green Finance Risk Management Platform for Malaysia</p>
+        </header>
+        <main role="main" aria-label="SmartGuard Dashboard and Interactive Q&A">
+            <section id="dashboard" aria-labelledby="dashboard-title">
+                <h2 class="section-title" id="dashboard-title">Platform Data Dashboard</h2>
+                <div class="dashboard-grid" aria-live="polite"></div>
+                <div id="dashboard-placeholder" style="display:none;color:var(--text-secondary);text-align:center;">No dashboard data available.</div>
+            </section>
+            <section id="interactive-qa-section" aria-labelledby="qa-title">
+                <h2 class="section-title" id="qa-title">Ask SmartGuard AI</h2>
+                <div id="interactive-qa">
+                    <div class="qa-display" id="qa-display" aria-live="polite"></div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0; margin-bottom: 12px;">Click a suggestion below or type your own question:</p>
+                    <div class="suggestion-grid" id="suggestion-grid"></div>
+                    <form class="qa-form" id="qa-form" autocomplete="off">
+                        <label for="question-input" class="visually-hidden">Your question for SmartGuard AI</label>
+                        <input type="text" id="question-input" name="question" placeholder="e.g., Tell me about your ESG scoring..." aria-label="Ask SmartGuard AI" autocomplete="off" required>
+                        <button type="submit" id="ask-btn">Ask</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>© 2025 SmartGuard. All Rights Reserved.</p>
+        </footer>
+    </div>
+    <script>
+        const qaDisplay = document.getElementById('qa-display'); const suggestionGrid = document.getElementById('suggestion-grid'); const qaForm = document.getElementById('qa-form'); const questionInput = document.getElementById('question-input'); const askBtn = document.getElementById('ask-btn'); const dashboardGrid = document.querySelector('.dashboard-grid'); const dashboardPlaceholder = document.getElementById('dashboard-placeholder');
+        
+        // **[UPDATED & CORRECTED]** Q&A responses object. The first three questions are removed from the list of suggestions.
+        const responses = {
+            // The following three entries are kept for keyword matching if the user types a similar question, but they won't be displayed as buttons.
+            "I would like to briefly understand the development trend of the green finance market in Malaysia.": `This chart clearly presents two core indicators of Malaysia's green finance market:
+- The blue bar chart represents the amount of new green financing each year, reflecting the annual growth momentum of the market.
+- The red line chart represents the cumulative amount of green financing, indicating the continuous expansion of the total market size.
+
+It can be clearly seen from the chart that both the annual increment and the overall scale of the market are showing a strong and accelerating growth trend.
+
+![Growth of Green Finance Market in Malaysia](Q1.jpeg)`,
+
+            "I would like to briefly understand the trends of the main green investment indicators in Malaysia?": `This chart tracks three key indicators in different fields to reflect the diversity and dynamic changes of the market:
+- The investment risk index of solar photovoltaic has been declining year by year, indicating that the investment environment in this field is becoming increasingly mature and the risks are decreasing.
+- The price of carbon credits has shown a fluctuating upward trend, reflecting the market's increasing emphasis on the value of carbon emission reduction.
+- The return on investment (ROI) of electric vehicle infrastructure has been steadily rising, demonstrating the increasingly strong profitability and appeal of this emerging field.
+
+![Trends of Main Green Investment Indicators in Malaysia](Q2.jpeg)`,
+
+            "I would like to ask about the investment prospects of the wind power generation industry in Malaysia?": `Of course. Here is the breakdown of the well-known players in Malaysia's green finance ecosystem.
+
+In Malaysia, the green finance landscape is not defined by a single type of "green finance company" but rather by a diverse ecosystem of players, each contributing in a distinct role. The most well-known participants can be grouped into the following categories:
+
+**1. Major Commercial Banks**
+These banks are the primary providers of green capital, supporting the market through loans, project financing, and the issuance of green bonds.
+- **Maybank:** As Malaysia's largest bank, Maybank is the definitive leader in the green finance sector.
+- **CIMB Group:** CIMB is a leading arranger and advisor for green and Sustainable and Responsible Investment (SRI) Sukuk in the ASEAN region.
+- **RHB Banking Group:** RHB is another active participant, with a strong emphasis on supporting SMEs.
+
+**2. Government-Linked Investment Companies (GLICs)**
+These large funds steer corporate Malaysia towards green transformation through their powerful investment decisions.
+- **Khazanah Nasional Berhad:** As Malaysia's sovereign wealth fund, Khazanah has embedded "Building a Sustainable Future" as a core pillar of its strategy.
+- **Permodalan Nasional Berhad (PNB):** PNB's "Sustainability Framework" requires the many large public companies within its portfolio to enhance their ESG practices.
+- **Employees Provident Fund (EPF / KWSP):** As the nation's massive pension fund, the EPF has made ESG a core part of its investment beliefs.
+
+**3. Project Developers & Energy Companies**
+These companies are the on-the-ground implementers of green projects.
+- **Tenaga Nasional Berhad (TNB):** As the national utility company, TNB is Malaysia's largest developer of renewable energy projects.
+- **Solarvest Holdings Berhad:** Solarvest is a publicly-listed company specializing in the solar photovoltaic (PV) ecosystem.
+
+This doughnut chart illustrates Malaysia's planned energy capacity mix by 2050 under the National Energy Transition Roadmap (NETR), highlighting the strategic focus areas for these players.
+
+![Malaysia's Planned Energy Capacity Mix by 2050](Q3.jpeg)`,
+
+            // These are the questions that WILL be displayed as suggestion buttons.
+            "How does SmartGuard support government policies like MyDigital and NETR?": `SmartGuard directly supports national strategies in two key ways:
+
+1.  **Data-Driven Policy Insights:** Our AI engine processes real-time data on green energy projects, comparing them against NETR goals. This generates clear, visual reports to help your ministry identify high-potential projects, ensuring subsidies are allocated effectively.
+2.  **Intelligent Risk Alerts:** The platform forecasts risks like supply chain disruptions. By providing early warnings, we enable the government to adjust policies proactively, ensuring the stability of the national energy transition.`,
+
+            "As a small investor, how can your platform help me?": `SmartGuard is designed specifically for investors like you. It simplifies green investing with two main features:
+
+1.  **'Ask-and-Go' Smart Advisor:** You can ask questions in plain language, like 'Is Company A a good investment?'. Our AI instantly analyzes financials and news to provide a simple, easy-to-understand answer.
+2.  **Intuitive Competitiveness Score:** Our unique scoring system converts complex data into a single 0-100 score. A higher score means stronger potential, allowing you to quickly screen for the most robust opportunities.`,
+
+            "Explain your ESG scoring system for financial institutions.": `Our ESG scoring system merges global standards with local context for superior insights:
+
+1.  **Global Standards Alignment:** We reference major frameworks like the *Global Reporting Initiative (GRI)*. This ensures our scoring system aligns with the evaluation criteria of international investors.
+2.  **Precise Local Adaptation:** We have deeply localized our metrics. For **'Environment'**, we analyze contributions to Malaysia's NETR. For **'Social'**, we assess local job creation. This provides a far more practical decision-making tool for financial institutions operating in Malaysia.`,
+
+            "default": `I can answer questions about the SmartGuard platform and the Malaysian green finance market. Please try one of the suggestions, or ask your own question.`
+        };
+        
+        // This list defines which questions will appear as suggestion buttons.
+        const suggestionQuestions = [
+            "How does SmartGuard support government policies like MyDigital and NETR?",
+            "As a small investor, how can your platform help me?",
+            "Explain your ESG scoring system for financial institutions."
+        ];
+
+        suggestionQuestions.forEach(question => {
+            const btn = document.createElement('button');
+            btn.className = 'suggestion-btn';
+            btn.type = 'button';
+            btn.textContent = question;
+            btn.onclick = () => handleQuestion(question, question);
+            suggestionGrid.appendChild(btn);
+        });
+
+        qaForm.addEventListener('submit', (e) => { e.preventDefault(); const userInput = questionInput.value.trim(); if (userInput === '') return; askBtn.disabled = true; questionInput.disabled = true; const matchedQuestionKey = findBestMatch(userInput); handleQuestion(userInput, matchedQuestionKey, () => { askBtn.disabled = false; questionInput.disabled = false; questionInput.focus(); }); questionInput.value = ''; });
+        function findBestMatch(userInput) { const inputWords = new Set(userInput.toLowerCase().split(/\s+/).filter(w => w.length > 2)); let bestMatchKey = 'default'; let maxScore = 0; for (const key in responses) { if (key === 'default') continue; const keyWords = new Set(key.toLowerCase().split(/\s+/)); let currentScore = 0; inputWords.forEach(word => { if (keyWords.has(word)) currentScore++; }); if (currentScore > maxScore) { maxScore = currentScore; bestMatchKey = key; } } return maxScore > 1 ? bestMatchKey : 'default'; }
+        function handleQuestion(questionText, responseKey, callback) { appendMessage(questionText, 'user-question'); setTimeout(() => { showThinkingAndRespond(responseKey, callback); }, 300); }
+        function showThinkingAndRespond(responseKey, callback) { const thinkingDiv = document.createElement('div'); thinkingDiv.className = 'thinking-indicator'; thinkingDiv.innerHTML = '<span></span><span></span><span></span>'; qaDisplay.appendChild(thinkingDiv); scrollToBottom(); setTimeout(() => { qaDisplay.removeChild(thinkingDiv); const responseText = responses[responseKey]; const answerDiv = appendMessage('', 'ai-answer', true); streamText(responseText, answerDiv, callback); }, 800); }
+        function appendMessage(text, className, isHTML = false) { const messageDiv = document.createElement('div'); messageDiv.className = `qa-message ${className}`; if (isHTML) { messageDiv.innerHTML = ''; } else { messageDiv.innerText = text; } qaDisplay.appendChild(messageDiv); scrollToBottom(); return messageDiv; }
+        function streamText(text, element, callback) { let index = 0; function typeCharacter() { if (index < text.length) { let partialHTML = marked.parse(text.slice(0, index + 1) + '▋'); element.innerHTML = DOMPurify.sanitize(partialHTML, { ADD_TAGS: ['img'] }); index++; setTimeout(typeCharacter, 15); } else { let finalHTML = marked.parse(text); element.innerHTML = DOMPurify.sanitize(finalHTML, { ADD_TAGS: ['img'] }); if (callback) callback(); } scrollToBottom(); } typeCharacter(); }
+        function scrollToBottom() { qaDisplay.scrollTop = qaDisplay.scrollHeight; }
+
+        // Dashboard population with gradient charts
+        function populateDashboard() {
+            const dashboardData = [
+                {
+                    type: 'doughnut',
+                    icon: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>`,
+                    title: "Project Competitiveness",
+                    value: 82,
+                    gradientColors: ['#22c55e', '#16a34a']
+                },
+                {
+                    type: 'bar',
+                    icon: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"></line><line x1="18" x2="18" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="16"></line></svg>`,
+                    title: "Sector Investment Potential",
+                    labels: ['Solar', 'Wind', 'Hydro', 'Biomass'],
+                    values: [90, 75, 60, 45],
+                    gradientColors: ['#3b82f6', '#1d4ed8']
+                },
+                {
+                    type: 'doughnut',
+                    icon: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+                    title: "Corporate ESG Score",
+                    value: 78,
+                    gradientColors: ['#8b5cf6', '#7c3aed']
+                }
+            ];
+
+            dashboardGrid.innerHTML = '';
+            if (!dashboardData.length) {
+                dashboardPlaceholder.style.display = ''; return;
+            }
+            dashboardPlaceholder.style.display = 'none';
+
+            dashboardData.forEach((card, index) => {
+                const cardDiv = document.createElement('article');
+                cardDiv.className = 'chart-card';
+                const canvasId = `chart-canvas-${index}`;
+                const chartHeight = 240;
+
+                let contentHTML = `<div class="chart-container" style="height:${chartHeight}px"><canvas id="${canvasId}"></canvas>`;
+                if (card.type === 'doughnut') {
+                    const gradientId = `text-gradient-${index}`;
+                    contentHTML += `
+                        <svg width="0" height="0" style="position:absolute;">
+                          <defs>
+                            <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stop-color="${card.gradientColors[0]}" />
+                              <stop offset="100%" stop-color="${card.gradientColors[1]}" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <div class="chart-overlay-text" style="fill:url(#${gradientId});">${card.value}</div>`;
+                }
+                contentHTML += `</div>`;
+                cardDiv.innerHTML = `<div class="chart-card-header">${card.icon}<h3>${card.title}</h3></div>${contentHTML}`;
+                dashboardGrid.appendChild(cardDiv);
+
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const chartGradient = ctx.createLinearGradient(0, 0, 0, chartHeight);
+                chartGradient.addColorStop(0, card.gradientColors[0]);
+                chartGradient.addColorStop(1, card.gradientColors[1]);
+
+                if (card.type === 'doughnut') {
+                    const overlayText = cardDiv.querySelector('.chart-overlay-text');
+                    overlayText.style.color = `url(#text-gradient-${index})`;
+                    
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            datasets: [{
+                                data: [card.value, 100 - card.value],
+                                backgroundColor: [chartGradient, 'rgba(42, 42, 42, 0.5)'],
+                                borderColor: 'var(--primary-card-bg)',
+                                borderWidth: 4,
+                                cutout: '80%'
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                    });
+                } else if (card.type === 'bar') {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: card.labels,
+                            datasets: [{
+                                data: card.values,
+                                backgroundColor: chartGradient,
+                                borderColor: 'rgba(0,0,0,0)',
+                                borderWidth: 0,
+                                borderRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 12 },
+                                padding: 10
+                            }},
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: 'var(--text-secondary)', font: { size: 12 } } },
+                                x: { grid: { display: false }, ticks: { color: 'var(--text-secondary)', font: { size: 12 } } }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        populateDashboard();
+    </script>
+</body>
+</html>
